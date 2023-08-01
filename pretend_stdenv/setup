@@ -1,3 +1,2 @@
 export PATH=$_PATH
-export MAKEFLAGS="${MAKEFLAGS:-} -j1"
 
