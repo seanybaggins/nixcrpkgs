@@ -4,10 +4,10 @@ let
   nixpkgs = env.nixpkgs;
 
   native_inputs =
-    (attrs.native_inputs or [])
+    (attrs.native_inputs or [ ])
     ++ env.default_native_inputs;
 
-  cross_inputs = (attrs.cross_inputs or []);
+  cross_inputs = (attrs.cross_inputs or [ ]);
 
   path_join = builtins.concatStringsSep ":";
 
@@ -26,7 +26,7 @@ let
 
   path_attrs = {
     _PATH = path_join (
-      (if attrs ? PATH then [attrs.PATH] else []) ++
+      (if attrs ? PATH then [ attrs.PATH ] else [ ]) ++
       (path_map "/bin" native_inputs)
     );
   };
@@ -42,25 +42,25 @@ let
     stdenv = ./pretend_stdenv;
 
     PKG_CONFIG_PATH = path_join (
-      (if attrs ? PKG_CONFIG_PATH then [attrs.PKG_CONFIG_PATH] else []) ++
+      (if attrs ? PKG_CONFIG_PATH then [ attrs.PKG_CONFIG_PATH ] else [ ]) ++
       (path_map "/lib/pkgconfig" native_inputs)
     );
 
     inherit (env) exe_suffix;
   };
 
-  cross_attrs = if !env.is_cross then {} else {
+  cross_attrs = if !env.is_cross then { } else {
     NIXCRPKGS = true;
 
     inherit (env) host arch os;
 
     PKG_CONFIG_CROSS_PATH = path_join (
-      (if attrs ? PKG_CONFIG_CROSS_PATH then [attrs.PKG_CONFIG_CROSS_PATH] else []) ++
+      (if attrs ? PKG_CONFIG_CROSS_PATH then [ attrs.PKG_CONFIG_CROSS_PATH ] else [ ]) ++
       (path_map "/lib/pkgconfig" cross_inputs)
     );
 
     CMAKE_CROSS_PREFIX_PATH = path_join (
-      (if attrs ? CMAKE_CROSS_PREFIX_PATH then [attrs.CMAKE_CROSS_PREFIX_PATH] else []) ++
+      (if attrs ? CMAKE_CROSS_PREFIX_PATH then [ attrs.CMAKE_CROSS_PREFIX_PATH ] else [ ]) ++
       cross_inputs
     );
   };
@@ -75,18 +75,18 @@ let
       if attrs.builder ? ruby then
         {
           builder = "${nixpkgs.ruby}/bin/ruby";
-          args = [attrs.builder.ruby];
+          args = [ attrs.builder.ruby ];
         }
       else
         attrs.builder
     else
       rec {
         builder = "${nixpkgs.bashInteractive}/bin/bash";
-        args = ["-ue" attrs.builder];
+        args = [ "-e" attrs.builder ];
       };
 
   drv_attrs = default_attrs // cross_attrs
     // filtered_attrs // name_attrs // builder_attrs // path_attrs;
 
 in
-  derivation drv_attrs
+derivation drv_attrs
